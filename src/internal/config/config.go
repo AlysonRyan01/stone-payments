@@ -33,10 +33,6 @@ func Load() (*Config, error) {
 		DBUser:        getEnv("DB_USER", ""),
 		DBPassword:    getEnv("DB_PASSWORD", ""),
 		DBName:        getEnv("DB_NAME", ""),
-		JWTSecret:     getEnv("JWT_SECRET", ""),
-		JWTExpiration: 24 * time.Hour,
-		AdminEmail:    getEnv("ADMIN_EMAIL", ""),
-		AdminPassword: getEnv("ADMIN_PASSWORD", ""),
 	}
 
 	if cfg.DBUser == "" || cfg.DBPassword == "" {
