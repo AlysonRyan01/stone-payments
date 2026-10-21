@@ -20,25 +20,25 @@ func NewHandler(s *Service) *Handler {
 func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 	var request CreateTransactionRequest
 	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
-		shared.WriteJSON(w, http.StatusBadRequest, nil, ErrInvalidPayload.Error())
+		shared.WriteJSON(w, http.StatusBadRequest, "", "", ErrInvalidPayload.Error(), "")
 		return
 	}
 
 	if err := request.Validate(); err != nil {
-		shared.WriteJSON(w, http.StatusBadRequest, nil, err.Error())
+		shared.WriteJSON(w, http.StatusBadRequest, "", "", err.Error(), "")
 		return
 	}
 
 	model, err := CreateRequestToModel(request)
 	if err != nil {
-		shared.WriteJSON(w, http.StatusBadRequest, nil, err.Error())
+		shared.WriteJSON(w, http.StatusBadRequest, "", "", err.Error(), "")
 		return
 	}
 	
 	id, err := h.service.Create(r.Context(), model)
 	if err != nil {
 		log.Printf("failed to create transaction: %v", err)
-		shared.WriteJSON(w, http.StatusInternalServerError, nil, "internal server error")
+		shared.WriteJSON(w, http.StatusBadRequest, "", "", err.Error(), "")
 		return
 	}
 

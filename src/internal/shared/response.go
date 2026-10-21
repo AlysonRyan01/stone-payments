@@ -7,17 +7,21 @@ import (
 )
 
 type response struct {
-	Data  any    `json:"data,omitempty"`
-	Error string `json:"error,omitempty"`
+	Status        any    `json:"data,omitempty"`
+	TransactionID string `json:"transactionId,omitempty"`
+	Error         string `json:"error,omitempty"`
+	Warning       string `json:"warning,omitempty"`
 }
 
-func WriteJSON(w http.ResponseWriter, code int, data any, errMsg string) {
+func WriteJSON(w http.ResponseWriter, code int, status string, data string, errMsg string, warning string) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(code)
 
 	resp := response{
-		Data:  data,
+		Status: status ,
+		TransactionID:  data,
 		Error: errMsg,
+		Warning: warning,
 	}
 
 	if err := json.NewEncoder(w).Encode(resp); err != nil {

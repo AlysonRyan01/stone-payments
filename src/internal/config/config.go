@@ -3,22 +3,21 @@ package config
 import (
 	"fmt"
 	"os"
-	"time"
 
 	"github.com/joho/godotenv"
 )
 
 type Config struct {
-	Port          string
-	DBHost        string
-	DBPort        string
-	DBUser        string
-	DBPassword    string
-	DBName        string
-	JWTSecret     string
-	JWTExpiration time.Duration
-	AdminEmail    string
-	AdminPassword string
+	Port       string
+	DBHost     string
+	DBPort     string
+	DBUser     string
+	DBPassword string
+	DBName     string
+
+	RedisHost     string
+	RedisPort     string
+	RedisPassword string
 }
 
 func Load() (*Config, error) {
@@ -27,16 +26,24 @@ func Load() (*Config, error) {
 	}
 
 	cfg := &Config{
-		Port:          getEnv("PORT", "8080"),
-		DBHost:        getEnv("DB_HOST", "localhost"),
-		DBPort:        getEnv("DB_PORT", "5432"),
-		DBUser:        getEnv("DB_USER", ""),
-		DBPassword:    getEnv("DB_PASSWORD", ""),
-		DBName:        getEnv("DB_NAME", ""),
+		Port:       getEnv("PORT", "8080"),
+		DBHost:     getEnv("DB_HOST", "localhost"),
+		DBPort:     getEnv("DB_PORT", "5432"),
+		DBUser:     getEnv("DB_USER", ""),
+		DBPassword: getEnv("DB_PASSWORD", ""),
+		DBName:     getEnv("DB_NAME", ""),
+
+		RedisHost:     getEnv("REDIS_HOST", "localhost"),
+		RedisPort:     getEnv("REDIS_PORT", "6379"),
+		RedisPassword: getEnv("REDIS_PASSWORD", ""),
 	}
 
 	if cfg.DBUser == "" || cfg.DBPassword == "" {
 		return nil, fmt.Errorf("DBUser or DBPassword not configured")
+	}
+
+	if cfg.RedisPassword == "" {
+		return nil, fmt.Errorf("REDIS_PASSWORD not configured")
 	}
 
 	return cfg, nil
@@ -51,6 +58,10 @@ func (c *Config) ConnectionString() string {
 		c.DBPassword,
 		c.DBName,
 	)
+}
+
+func (c *Config) RedisAddr() string {
+	return fmt.Sprintf("%s:%s", c.RedisHost, c.RedisPort)
 }
 
 func getEnv(key, fallback string) string {

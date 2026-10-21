@@ -8,5 +8,9 @@ CREATE TABLE IF NOT EXISTS transaction (
     created_at  TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
-CREATE INDEX IF NOT EXISTS idx_transaction_card_timestamp
-    ON transaction (card_number, timestamp DESC);
+CREATE TABLE IF NOT EXISTS suspicious_transaction (
+    id             UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    transaction_id UUID NOT NULL REFERENCES transaction (id) ON DELETE CASCADE,
+    reason         TEXT NOT NULL,
+    created_at     TIMESTAMPTZ NOT NULL DEFAULT now()
+);
